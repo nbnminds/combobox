@@ -28,8 +28,8 @@
 	}
 
 	let {
-		value = $bindable([]),
-		defaultValue = [],
+		value = $bindable(undefined),
+		defaultValue,
 		onValueChange,
 		options,
 		fetchOptions,
@@ -95,19 +95,30 @@
 	let error = $state<string | null>(null);
 	let abortController: AbortController | null = null;
 
+	// Helper to normalize value to array for internal state
+	function normalizeToArray(val: any): any[] {
+		if (val === null || val === undefined) return [];
+		if (Array.isArray(val)) return [...val];
+		return [val];
+	}
+
+	// Helper to normalize array to single value or array based on singleSelect
+	function normalizeFromArray(arr: any[]): any | any[] {
+		if (singleSelect) {
+			return arr.length > 0 ? arr[0] : (undefined as any);
+		}
+		return arr;
+	}
+
 	// Initialize selected values
 	let selectedValues = $state<any[]>(
-		value && Array.isArray(value) && value.length > 0
-			? [...value]
-			: defaultValue && Array.isArray(defaultValue)
-				? [...defaultValue]
-				: []
+		normalizeToArray(value ?? defaultValue)
 	);
 
 	// Sync with external value prop
 	$effect(() => {
-		if (value && Array.isArray(value)) {
-			selectedValues = [...value];
+		if (value !== undefined) {
+			selectedValues = normalizeToArray(value);
 		}
 	});
 
@@ -302,9 +313,10 @@
 			}
 		}
 
-		// Update bindable value
-		value = selectedValues;
-		onValueChange?.(selectedValues);
+		// Update bindable value - normalize based on singleSelect mode
+		const normalizedValue = normalizeFromArray(selectedValues);
+		value = normalizedValue;
+		onValueChange?.(normalizedValue);
 	}
 
 	function toggleSelectAll() {
@@ -321,22 +333,25 @@
 			selectedValues = [...selectedValues, ...newSelections];
 		}
 
-		value = selectedValues;
-		onValueChange?.(selectedValues);
+		const normalizedValue = normalizeFromArray(selectedValues);
+		value = normalizedValue;
+		onValueChange?.(normalizedValue);
 	}
 
 	function handleRemove(valueToRemove: any) {
 		selectedValues = selectedValues.filter(
 			(selected) => getOptionValue(selected) !== getOptionValue(valueToRemove)
 		);
-		value = selectedValues;
-		onValueChange?.(selectedValues);
+		const normalizedValue = normalizeFromArray(selectedValues);
+		value = normalizedValue;
+		onValueChange?.(normalizedValue);
 	}
 
 	function handleClearAll() {
 		selectedValues = [];
-		value = selectedValues;
-		onValueChange?.(selectedValues);
+		const normalizedValue = normalizeFromArray(selectedValues);
+		value = normalizedValue;
+		onValueChange?.(normalizedValue);
 	}
 
 	function handleSearchChange(query: string) {
@@ -371,6 +386,7 @@
 			{searchable}
 			{placeholder}
 			{disabled}
+			{singleSelect}
 			{getOptionLabel}
 			{getOptionValue}
 			{getOptionStyle}

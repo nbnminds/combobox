@@ -31,9 +31,9 @@ export type FetchOptionsFunction<T = any> = (search: string) => Promise<T[]>;
 // Main component props interface
 export interface ComboboxProps<T = any> {
 	// Value management
-	value?: T[];
-	defaultValue?: T[];
-	onValueChange?: (value: T[]) => void;
+	value?: T | T[];
+	defaultValue?: T | T[];
+	onValueChange?: (value: T | T[]) => void;
 
 	// Options (static or async)
 	options?: T[] | GroupedOption<T>[];

@@ -128,6 +128,38 @@ For easier maintenance, define your styles once and reuse:
 />
 ```
 
+### Single Select Mode
+
+In single select mode, the component returns a single value (not an array) and displays plain text instead of badges:
+
+```svelte
+<script>
+  import { Combobox } from '@nbnminds/combobox';
+  
+  const languages = ['JavaScript', 'TypeScript', 'Python', 'Java'];
+  let selected = $state(undefined); // Single value, not array
+</script>
+
+<Combobox 
+  options={languages}
+  bind:value={selected}
+  singleSelect={true}
+  placeholder="Choose one language"
+  searchable={false} // Optional: hide search bar
+  // Add your class props for styling
+/>
+
+{#if selected}
+  <p>Selected: {selected}</p>
+{/if}
+```
+
+**Note:** When `singleSelect={true}`:
+- `value` returns `T | undefined` instead of `T[]`
+- Selected value displays as plain text (no badges)
+- No remove buttons are shown
+- Picker automatically closes after selection
+
 ### With Custom Objects
 
 ```svelte
@@ -149,6 +181,40 @@ For easier maintenance, define your styles once and reuse:
   placeholder="Select users"
   // Add your class props for styling
 />
+```
+
+### Single Select with Custom Objects
+
+```svelte
+<script>
+  import { Combobox } from '@nbnminds/combobox';
+  
+  interface User {
+    id: number;
+    name: string;
+    email: string;
+  }
+  
+  const users: User[] = [
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+  ];
+  let selected = $state<User | undefined>(undefined); // Single object, not array
+</script>
+
+<Combobox 
+  options={users}
+  getOptionLabel={(user) => user.name}
+  getOptionValue={(user) => user.id}
+  bind:value={selected}
+  singleSelect={true}
+  placeholder="Select a user"
+  // Add your class props for styling
+/>
+
+{#if selected}
+  <p>Selected: {selected.name} ({selected.email})</p>
+{/if}
 ```
 
 ### With AJAX Autocomplete
@@ -224,14 +290,15 @@ Since the component doesn't include animations, add them using Svelte transition
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `value` | `T[]` | `[]` | Selected values (bindable) |
-| `defaultValue` | `T[]` | `[]` | Default selected values |
+| `value` | `T \| T[]` | `undefined` or `[]` | Selected value(s) - single value when `singleSelect={true}`, array otherwise (bindable) |
+| `defaultValue` | `T \| T[]` | `undefined` or `[]` | Default selected value(s) |
 | `options` | `T[] \| GroupedOption<T>[]` | - | Static options array |
 | `fetchOptions` | `(search: string) => Promise<T[]>` | - | Async function to fetch options |
 | `getOptionLabel` | `(option: T) => string` | Auto | Function to get option label |
 | `getOptionValue` | `(option: T) => string \| number` | Auto | Function to get option value |
 | `placeholder` | `string` | `'Select options'` | Placeholder text |
 | `maxCount` | `number` | - | Max badges to show before "+X more" |
+| `singleSelect` | `boolean` | `false` | Enable single-select mode (returns single value, shows plain text) |
 | `searchable` | `boolean` | `true` | Enable search functionality |
 | `hideSelectAll` | `boolean` | `false` | Hide select all option |
 | `disabled` | `boolean` | `false` | Disable the component |

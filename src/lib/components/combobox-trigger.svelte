@@ -13,6 +13,7 @@
 		searchable?: boolean;
 		placeholder?: string;
 		disabled?: boolean;
+		singleSelect?: boolean;
 		getOptionLabel: OptionLabelGetter<any>;
 		getOptionValue: OptionValueGetter<any>;
 		getOptionStyle?: OptionStyleGetter<any>;
@@ -39,6 +40,7 @@
 		searchable = true,
 		placeholder = 'Select options',
 		disabled = false,
+		singleSelect = false,
 		getOptionLabel,
 		getOptionValue,
 		getOptionStyle,
@@ -92,46 +94,63 @@
 	class={cn('combobox-trigger', className)}
 	disabled={disabled}
 >
-	<div class={cn('combobox-badge-container', badgeContainerClass)}>
-		{#each visibleBadges as value}
-			{@const label = getOptionLabel(value)}
-			{@const optionValue = getOptionValue(value)}
-			{@const customStyle = getOptionStyle?.(value)}
-			<Badge class={cn('combobox-badge', badgeClass)}>
+	{#if singleSelect}
+		<!-- Single select mode: show plain text -->
+		<div class={cn('combobox-badge-container', badgeContainerClass)}>
+			{#if selectedValues.length > 0}
+				{@const value = selectedValues[0]}
+				{@const label = getOptionLabel(value)}
+				{@const customStyle = getOptionStyle?.(value)}
 				<span style={typeof customStyle === 'string' ? customStyle : undefined}>
 					{label}
 				</span>
-				<button
-					type="button"
-					class={cn('combobox-remove-button', removeButtonClass)}
-					onclick={(e) => handleRemove(e, value)}
-					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							e.preventDefault();
-							handleRemove(e, value);
-						}
-					}}
-					aria-label={`Remove ${label}`}
-				>
-					<XIcon />
-				</button>
-			</Badge>
-		{/each}
+			{:else}
+				<span class={cn('combobox-placeholder', placeholderClass)}>{placeholder}</span>
+			{/if}
+		</div>
+	{:else}
+		<!-- Multi-select mode: show badges -->
+		<div class={cn('combobox-badge-container', badgeContainerClass)}>
+			{#each visibleBadges as value}
+				{@const label = getOptionLabel(value)}
+				{@const optionValue = getOptionValue(value)}
+				{@const customStyle = getOptionStyle?.(value)}
+				<Badge class={cn('combobox-badge', badgeClass)}>
+					<span style={typeof customStyle === 'string' ? customStyle : undefined}>
+						{label}
+					</span>
+					<button
+						type="button"
+						class={cn('combobox-remove-button', removeButtonClass)}
+						onclick={(e) => handleRemove(e, value)}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								handleRemove(e, value);
+							}
+						}}
+						aria-label={`Remove ${label}`}
+					>
+						<XIcon />
+					</button>
+				</Badge>
+			{/each}
 
-		{#if remainingCount > 0}
-			<Badge class={cn('combobox-badge', badgeClass)}>
-				+{remainingCount} more
-			</Badge>
-		{/if}
+			{#if remainingCount > 0}
+				<Badge class={cn('combobox-badge', badgeClass)}>
+					+{remainingCount} more
+				</Badge>
+			{/if}
 
-		{#if selectedValues.length === 0}
-			<span class={cn('combobox-placeholder', placeholderClass)}>{placeholder}</span>
-		{/if}
-	</div>
+			{#if selectedValues.length === 0}
+				<span class={cn('combobox-placeholder', placeholderClass)}>{placeholder}</span>
+			{/if}
+		</div>
+	{/if}
 
-	{#if (!hideClearAll && selectedValues.length > 0) || !hideArrow}
+	{#if (!singleSelect && (!hideClearAll && selectedValues.length > 0)) || !hideArrow}
 		<div class={cn('combobox-icons-container', iconsContainerClass)}>
-			{#if !hideClearAll && selectedValues.length > 0}
+			{#if !singleSelect && !hideClearAll && selectedValues.length > 0}
 				<button
 					type="button"
 					class={cn('combobox-clear-all', clearAllIconClass)}

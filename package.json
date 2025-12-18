@@ -1,6 +1,6 @@
 {
   "name": "@nbnminds/combobox",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A powerful Svelte 5 dropdown component with single/multi-select and AJAX autocomplete",
   "license": "MIT",
   "author": "NBN Minds Private Limited",

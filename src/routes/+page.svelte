@@ -15,7 +15,7 @@
 		'PHP',
 		'Swift'
 	];
-	let selectedLanguages = $state<string[]>([]);
+	let selectedLanguages = $state<string[]>(['Simple Array']);
 
 	// Example 2: Custom objects
 	interface User {
@@ -55,7 +55,7 @@
 	let selectedVariation = $state<string[]>([]);
 
 	// Example 5: Single select
-	let selectedSingle = $state<string[]>([]);
+	let selectedSingle = $state<string | undefined>(undefined);
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
@@ -185,12 +185,13 @@
 					bind:value={selectedSingle}
 					singleSelect={true}
 					placeholder="Choose one language"
+					searchable={false}
 				/>
 
-				{#if selectedSingle.length > 0}
+				{#if selectedSingle}
 					<div class="mt-4 rounded-md bg-blue-50 p-3">
 						<p class="mb-2 text-sm font-medium text-gray-700">Selected:</p>
-						<p class="text-sm text-gray-600">{selectedSingle[0]}</p>
+						<p class="text-sm text-gray-600">{selectedSingle}</p>
 					</div>
 				{/if}
 			</div>
