@@ -18,6 +18,7 @@
 		searchQuery?: string;
 		onSearchChange?: (value: string) => void;
 		searchPlaceholder?: string;
+		singleSelect?: boolean;
 		children?: import('svelte').Snippet;
 		portalProps?: ComponentProps<typeof PopoverContent>['portalProps'];
 	}
@@ -35,6 +36,7 @@
 		searchQuery = '',
 		onSearchChange,
 		searchPlaceholder = 'Search options...',
+		singleSelect = false,
 		children,
 		portalProps
 	}: Props = $props();
@@ -43,6 +45,12 @@
 <PopoverContent
 	class={cn('combobox-content', rootClassName, className)}
 	portalProps={portalProps}
+	onOpenAutoFocus={(e) => {
+		// Prevent auto-focus on first item when searchable is false
+		if (!searchable) {
+			e.preventDefault();
+		}
+	}}
 >
 	{#if searchable}
 		<div class={cn('combobox-search-container', searchContainerClass)}>
@@ -57,7 +65,7 @@
 			/>
 		</div>
 	{/if}
-	<div class={cn('combobox-list-container', listContainerClass)} role="listbox" aria-multiselectable="true">
+	<div class={cn('combobox-list-container', listContainerClass)} role="listbox" aria-multiselectable={!singleSelect}>
 		<div class={cn('combobox-list', listClass)}>
 			{@render children?.()}
 		</div>

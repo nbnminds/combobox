@@ -413,6 +413,7 @@
 			{searchQuery}
 			onSearchChange={handleSearchChange}
 			searchPlaceholder="Search options..."
+			{singleSelect}
 			class={contentClass}
 			rootClassName={className}
 			{searchContainerClass}
@@ -450,6 +451,7 @@
 								{getOptionDisabled}
 								{getOptionStyle}
 								onToggle={toggleOption}
+								{singleSelect}
 								class={itemClass}
 								checkboxClass={itemCheckboxClass}
 								labelClass={itemLabelClass}
@@ -481,6 +483,7 @@
 						{getOptionDisabled}
 						{getOptionStyle}
 						onToggle={toggleOption}
+						{singleSelect}
 						class={itemClass}
 						checkboxClass={itemCheckboxClass}
 						labelClass={itemLabelClass}

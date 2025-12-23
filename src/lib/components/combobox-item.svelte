@@ -11,6 +11,7 @@
 		getOptionDisabled?: OptionDisabledGetter<T>;
 		getOptionStyle?: OptionStyleGetter<T>;
 		onToggle: (option: T) => void;
+		singleSelect?: boolean;
 		class?: string;
 		checkboxClass?: string;
 		labelClass?: string;
@@ -24,6 +25,7 @@
 		getOptionDisabled, 
 		getOptionStyle, 
 		onToggle, 
+		singleSelect = false,
 		class: className,
 		checkboxClass,
 		labelClass
@@ -61,7 +63,9 @@
 	onclick={handleClick}
 	onkeydown={handleKeydown}
 >
-	<Checkbox checked={selected} disabled={disabled} class={cn('combobox-item-checkbox', checkboxClass)} />
+	{#if !singleSelect}
+		<Checkbox checked={selected} disabled={disabled} class={cn('combobox-item-checkbox', checkboxClass)} />
+	{/if}
 	<span class={cn('combobox-item-label', labelClass)} style={typeof customStyle === 'string' ? customStyle : undefined}>
 		{label}
 	</span>
